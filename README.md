@@ -3,9 +3,9 @@
 *Run Home Assistant as non-root using the official docker image!*
 
 There are many reasons why one would want to run [Home Assistant] as a different user than root, even when using docker:
-When using a mapped volume for the configuration, you might want to access and edit it outside of the docker container - running the container as root will lead to permission problems. It also a security best-practice, as it provides more protection against container escape exploits.
+When using a mapped volume for the configuration, you might want to access and edit it outside of the docker container - running the container as root will lead to permission problems. It is also a security best-practice, as it provides more protection against container escape exploits.
 
-The Home Assistant docker image since version 0.94 installs additional required python packages site-wide, which only root is allowed to do. This simple script allows you to start Home Assistant inside the official image, but using a virtual python environment in which ordinary users are allowed to install.
+The Home Assistant docker image since version 0.94 installs additional required python packages site-wide, which only root is allowed to do. This simple script allows you to start Home Assistant inside the official image, but using a virtual python environment in which ordinary users are allowed to install packages.
 
 ## Usage
 
