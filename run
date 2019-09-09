@@ -2,7 +2,7 @@
 
 set -e
 
-VENV="/tmp/venv"
+VENV="/var/tmp/venv"
 log(){ echo "$*" >&2; }
 
 log "Running as $(id -u):$(id -g)"
