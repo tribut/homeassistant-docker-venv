@@ -23,7 +23,7 @@ If you are running Docker Compose, you have to adds these parameters to your `do
     user: '1000:1000'
     command: '/config/docker/run'
 
-In any case you must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`)!
+In any case you must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
 
 ## Support
 
