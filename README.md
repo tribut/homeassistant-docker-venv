@@ -27,7 +27,7 @@ In any case you must make sure the user you select can **write to your configura
 
 ## Support
 
-If you have any trouble with this setup, please open a [ticket] here. This configuration is unsupported by the Home Assistant project.
+If you have any trouble with this setup, please open a [ticket] here. This configuration is [unsupported by the Home Assistant project](https://github.com/home-assistant/home-assistant/issues/24397#issuecomment-527446679).
 
 [Home Assistant]: https://www.home-assistant.io/
 [official docs]: https://www.home-assistant.io/docs/installation/docker/
