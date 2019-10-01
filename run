@@ -7,6 +7,11 @@ log(){ echo "$*" >&2; }
 
 log "Running as $(id -u):$(id -g)"
 
+if [ -n "$UMASK" ]; then
+  log "Setting umask to $UMASK"
+  umask "$UMASK"
+fi
+
 log "Initializing venv in $VENV"
 python3 -m venv --system-site-packages "$VENV"
 . "$VENV/bin/activate"

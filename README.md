@@ -18,12 +18,22 @@ Then just pass the appropriate `--user` flag and the script to the `docker run` 
 
     docker run --init -d --name="home-assistant" -e "TZ=America/New_York" -v /PATH_TO_YOUR_CONFIG:/config --net=host --user 1000:1000 homeassistant/home-assistant:stable /config/docker/run
 
+You must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
+
+### Default file permissions
+
+If you need the files created by Home Assistant to be writeable by the group or everyone, you can customize the default permissions using the environment variable `UMASK` (see [umask (Wikipedia)](https://en.wikipedia.org/wiki/Umask) for an explanation).
+
+For example, to allow write access for the group, add `-e UMASK=007` to your `docker run` call.
+
+### Docker Compose
+
 If you are running Docker Compose, you have to adds these parameters to your `docker-compose.yml` file instead:
 
     user: '1000:1000'
     command: '/config/docker/run'
-
-In any case you must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
+    environment:
+      - UMASK=007
 
 ## Support
 
