@@ -28,7 +28,7 @@ For example, to allow write access for the group, add `-e UMASK=007` to your `do
 
 ### Docker Compose
 
-If you are running Docker Compose, you have to adds these parameters to your `docker-compose.yml` file instead:
+If you are running Docker Compose, you have to add these parameters to your `docker-compose.yml` file instead:
 
     user: '1000:1000'
     command: '/config/docker/run'
