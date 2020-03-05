@@ -17,4 +17,6 @@ python3 -m venv --system-site-packages "$VENV"
 . "$VENV/bin/activate"
 
 log "Starting homeassistant"
-exec python3 -m homeassistant --config /config
+set -- ${@:-python3 -m homeassistant --config /config}
+# replace the current pid 1 with the original command
+exec "$@"

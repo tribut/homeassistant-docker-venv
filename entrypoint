@@ -1,0 +1,32 @@
+#!/bin/sh
+
+log(){ echo "$*" >&2; }
+
+set -- /config/docker/run "$@"
+
+if [ "$(id -u)" = "0" ]; then
+  PACKAGES="su-exec $PACKAGES"
+  log "Installing extra packages"
+  apk add --quiet --no-progress --no-cache $PACKAGES
+
+  USER="homeassistant"
+  PUID="${PUID:-1000}"
+  PGID="${PGID:-1000}"
+
+  # While su-exec works with a uid:gid input, some HA
+  # commands seem to fail if we don't have an actual
+  # user. ie: shell_command would return error code 255
+  log "Creating user $USER with $PUID:$PGID"
+  deluser "$USER" >/dev/null 2>&1
+  delgroup "$USER" >/dev/null 2>&1
+  addgroup -g "$PGID" "$USER"
+  adduser -G "$USER" -D -H -u "$PUID" "$USER"
+
+  log "Dropping privileges to $USER"
+  set -- su-exec "$USER:$USER" "$@"
+else
+  log "Not running as root. Extra packages won't be installed."
+fi
+
+# replace the current pid 1 with original command
+exec "$@"

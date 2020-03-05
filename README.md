@@ -7,9 +7,11 @@ When using a mapped volume for the configuration, you might want to access and e
 
 The Home Assistant docker image since version 0.94 installs additional required python packages site-wide, which only root is allowed to do. This simple script allows you to start Home Assistant inside the official image, but using a virtual python environment in which ordinary users are allowed to install packages.
 
+Also, some packages on Alpine (homeassistant's base image) are buggy if not running as root (like ping). For that reason, the script also supports using a custom entrypoint to alter packages before dropping privileges.
+
 ## Usage
 
-Follow the [official docs] for installation inside docker. But before you start your container, make sure the script `run` is available as `/config/docker/run`:
+Follow the [official docs] for installation inside docker. But before you start your container, make sure the scripts `entrypoint` and `run` are available in `/config/docker`:
 
     cd /PATH_TO_YOUR_CONFIG
     git clone https://github.com/tribut/homeassistant-docker-venv docker
@@ -17,6 +19,10 @@ Follow the [official docs] for installation inside docker. But before you start 
 Then just pass the appropriate `--user` flag and the script to the `docker run` command:
 
     docker run --init -d --name="home-assistant" -e "TZ=America/New_York" -v /PATH_TO_YOUR_CONFIG:/config --net=host --user 1000:1000 homeassistant/home-assistant:stable /config/docker/run
+
+If the custom entrypoint is wanted, pass the appropriate `PUID` and `PGID` environment variables and the scripts to the `docker run` command:
+
+    docker run --init -d --name="home-assistant" -e "TZ=America/New_York" -e "PUID=1000" -e "PGID=1000" -e "PACKAGES=iputils" -v /PATH_TO_YOUR_CONFIG:/config --net=host --entrypoint=/config/docker/entrypoint homeassistant/home-assistant:stable
 
 You must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
 
@@ -33,6 +39,14 @@ If you are running Docker Compose, you have to add these parameters to your `doc
     user: '1000:1000'
     command: '/config/docker/run'
     environment:
+      - UMASK=007
+
+Or with the custom entrypoint:
+
+    entrypoint: '/config/docker/entrypoint'
+    environment:
+      - PUID=1000
+      - PGID=1000
       - UMASK=007
 
 ## Support
