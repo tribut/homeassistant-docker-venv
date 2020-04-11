@@ -28,6 +28,27 @@ delgroup "$USER" >/dev/null 2>&1 || true
 addgroup -g "$PGID" "$USER"
 adduser -G "$USER" -D -H -u "$PUID" "$USER"
 
+if [ -n "${EXTRA_GID:-}" ]; then
+  bashio::log.info "Resolving suppementary GIDs: $EXTRA_GID"
+  supplementary_groups=()
+
+  for gid in $EXTRA_GID; do
+    group="$(getent group "$gid" | cut -d: -f1 || true)"
+
+    if [ -z "$group" ]; then
+      group="$USER-$gid"
+      addgroup -g "$gid" "$group"
+    fi
+
+    supplementary_groups+=( "$group" )
+  done
+
+  bashio::log.info "Appending supplementary groups: ${supplementary_groups[@]}"
+  for group in "${supplementary_groups[@]}"; do
+    addgroup "$USER" "$group"
+  done
+fi
+
 #
 # Install extra packages
 #
