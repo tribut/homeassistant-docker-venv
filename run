@@ -50,6 +50,12 @@ if [ -n "${EXTRA_GID:-}" ]; then
 fi
 
 #
+# Allow run 'ping' as non-root user
+#
+
+chmod u+s /bin/ping
+
+#
 # Install extra packages
 #
 
