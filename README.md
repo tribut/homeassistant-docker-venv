@@ -9,7 +9,7 @@ The Home Assistant docker image since version 0.94 installs additional required 
 
 Since version 0.107, the Home Assistant docker image uses the [S6-Overlay](https://github.com/just-containers/s6-overlay) as its init system. S6 _requires_ root to start, privilege drop is performed right before starting the Home Assistant service.
 
-Finally, some packages on Alpine (homeassistant's base image) are buggy if not running as root (like ping). For that reason, the custom run script supports installing extra packages, specified in the `PACKAGES` environment variable, before starting Home-Assistant.
+Finally, some packages on Alpine (Home Assistant's base image) are buggy if not running as root (like ping). For that reason, the custom run script supports installing extra packages, specified in the `PACKAGES` environment variable, before starting Home Assistant.
 
 ## Usage
 
@@ -41,7 +41,7 @@ docker run -d \
 
 You must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
 
-**Do not use the --init flag. S6 is is the init system. Using that flag would likely prevent Home Assistant from starting.**
+**Do not use the --init flag. S6 is the init system. Using that flag would likely prevent Home Assistant from starting.**
 
 ### Default file permissions
 
