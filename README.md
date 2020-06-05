@@ -7,24 +7,41 @@ When using a mapped volume for the configuration, you might want to access and e
 
 The Home Assistant docker image since version 0.94 installs additional required python packages site-wide, which only root is allowed to do. This simple script allows you to start Home Assistant inside the official image, but using a virtual python environment in which ordinary users are allowed to install packages.
 
-Also, some packages on Alpine (homeassistant's base image) are buggy if not running as root (like ping). For that reason, the script also supports using a custom entrypoint to alter packages before dropping privileges.
+Since version 0.107, the Home Assistant docker image uses the [S6-Overlay](https://github.com/just-containers/s6-overlay) as its init system. S6 _requires_ root to start, privilege drop is performed right before starting the Home Assistant service.
+
+Finally, some packages on Alpine (homeassistant's base image) are buggy if not running as root (like ping). For that reason, the custom run script supports installing extra packages, specified in the `PACKAGES` environment variable, before starting Home-Assistant.
 
 ## Usage
 
-Follow the [official docs] for installation inside docker. But before you start your container, make sure the scripts `entrypoint` and `run` are available in `/config/docker`:
+Follow the [official docs] for installation inside docker. But before you start your container, make sure the script `run` is available in `/config/docker`:
 
     cd /PATH_TO_YOUR_CONFIG
     git clone https://github.com/tribut/homeassistant-docker-venv docker
 
-Then just pass the appropriate `--user` flag and the script to the `docker run` command:
+Then you must add three things to your `docker run` command:
 
-    docker run --init -d --name="home-assistant" -e "TZ=America/New_York" -v /PATH_TO_YOUR_CONFIG:/config --net=host --user 1000:1000 homeassistant/home-assistant:stable /config/docker/run
+1. The `PUID` environment variable will represent the user id under which Home Assistant runs.
+1. The `PGID` environment variable will represent the group id under which Home Assistant runs.
+1. Volume mount the `run` script on top of Home Assistant's run script: `/etc/services.d/home-assistant/run`
 
-If the custom entrypoint is wanted, pass the appropriate `PUID` and `PGID` environment variables and the scripts to the `docker run` command:
+The resulting `docker run` command would look like:
 
-    docker run --init -d --name="home-assistant" -e "TZ=America/New_York" -e "PUID=1000" -e "PGID=1000" -e "PACKAGES=iputils" -v /PATH_TO_YOUR_CONFIG:/config --net=host --entrypoint=/config/docker/entrypoint homeassistant/home-assistant:stable
+```sh
+docker run -d \
+    --name="home-assistant" \
+    -e "TZ=America/New_York" \
+    -e "PUID=1000" \
+    -e "PGID=1000" \
+    -e "PACKAGES=iputils" \
+    -v "/PATH_TO_YOUR_CONFIG:/config" \
+    -v "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run" \
+    --net=host \
+    homeassistant/home-assistant:stable
+```
 
 You must make sure the user you select can **write to your configuration directory** (`/PATH_TO_YOUR_CONFIG`) and has **access to your additional devices** (if applicable, anything made available using `docker run [...] --device`)!
+
+**Do not use the --init flag. S6 is is the init system. Using that flag would likely prevent Home Assistant from starting.**
 
 ### Default file permissions
 
@@ -36,18 +53,21 @@ For example, to allow write access for the group, add `-e UMASK=007` to your `do
 
 If you are running Docker Compose, you have to add these parameters to your `docker-compose.yml` file instead:
 
-    user: '1000:1000'
-    command: '/config/docker/run'
+```yaml
+home-assistant:
+    container_name: home-assistant
+    image: "homeassistant/home-assistant:stable"
+    network_mode: host
     environment:
-      - UMASK=007
-
-Or with the custom entrypoint:
-
-    entrypoint: '/config/docker/entrypoint'
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - UMASK=007
+        - TZ=America/New_York
+        - PUID=1000
+        - PGID=1000
+        - UMASK=007
+        - PACKAGES=iputils
+    volumes:
+        - "/PATH_TO_YOUR_CONFIG/config:/config"
+        - "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run"
+```
 
 ## Support
 
