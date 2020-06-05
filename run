@@ -71,7 +71,6 @@ su "$USER" \
 #
 
 cd "$CONFIG_PATH" || bashio::exit.nok "Can't find config folder: $CONFIG_PATH"
-chown -R "$USER:$USER" .
 
 if [ -n "${UMASK}" ]; then
   bashio::log.info "Setting umask: $UMASK"
