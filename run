@@ -11,11 +11,8 @@ PACKAGES="${PACKAGES:-}"
 VENV_PATH="${VENV:-/var/tmp/homeassistant-venv}"
 CONFIG_PATH=/config
 
-# Enable Jemalloc for Home Assistant Core
-export LD_PRELOAD="/usr/local/lib/libjemalloc.so.2"
-
 #
-# Creating user
+# Create user
 #
 
 # Some HA commands seem to fail if we don't have an actual user.
@@ -70,8 +67,6 @@ su "$USER" \
 # Fix permissions
 #
 
-cd "$CONFIG_PATH" || bashio::exit.nok "Can't find config folder: $CONFIG_PATH"
-
 if [ -n "${UMASK}" ]; then
   bashio::log.info "Setting umask: $UMASK"
   umask "$UMASK"
@@ -83,6 +78,16 @@ fi
 
 bashio::log.info "Activating venv"
 . "$VENV_PATH/bin/activate"
+
+# Everything below should be kept in sync with
+#   core:rootfs/etc/services.d/home-assistant/run
+# from upstream:
+cd "$CONFIG_PATH" || bashio::exit.nok "Can't find config folder: $CONFIG_PATH"
+
+# Enable Jemalloc for Home Assistant Core, unless disabled
+if [[ -z "${DISABLE_JEMALLOC+x}" ]]; then
+  export LD_PRELOAD="/usr/local/lib/libjemalloc.so.2"
+fi
 
 bashio::log.info "Starting homeassistant"
 exec \
