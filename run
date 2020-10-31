@@ -67,7 +67,7 @@ fi
 
 if [ -n "${PACKAGES}" ]; then
   bashio::log.info "Installing extra packages: $PACKAGES"
-  apk add --quiet --no-progress --no-cache $PACKAGES
+  apk add --quiet --no-progress --no-cache -- $PACKAGES
 fi
 
 #
