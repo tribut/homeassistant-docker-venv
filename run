@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bashio
 
 USER="homeassistant"
+GROUP="$USER"
 PUID="${PUID:-1000}"
 PGID="${PGID:-1000}"
 
@@ -20,10 +21,10 @@ CONFIG_PATH=/config
 bashio::log.info "Creating user $USER with $PUID:$PGID"
 
 deluser "$USER" >/dev/null 2>&1 || true
-delgroup "$USER" >/dev/null 2>&1 || true
+delgroup "$GROUP" >/dev/null 2>&1 || true
 
-addgroup -g "$PGID" "$USER"
-adduser -G "$USER" -D -H -u "$PUID" "$USER"
+addgroup -g "$PGID" "$GROUP"
+adduser -G "$GROUP" -D -H -u "$PUID" "$USER"
 
 if [ -n "${EXTRA_GID:-}" ]; then
   bashio::log.info "Resolving suppementary GIDs: $EXTRA_GID"
