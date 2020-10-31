@@ -23,7 +23,21 @@ bashio::log.info "Creating user $USER with $PUID:$PGID"
 deluser "$USER" >/dev/null 2>&1 || true
 delgroup "$GROUP" >/dev/null 2>&1 || true
 
-addgroup -g "$PGID" "$GROUP"
+# Re-use existing group (can't delgroup a group that is in use)
+group="$(getent group "$PGID" | cut -d: -f1 || true)"
+if [ -z "$group" ]; then
+  addgroup -g "$PGID" "$GROUP"
+else
+  bashio::log.notice "Re-using existing group with gid $PGID: $group"
+  GROUP="$group"
+fi
+
+# Replace existing user (ensures correct shell and primary group)
+user="$(getent passwd "$PUID" | cut -d: -f1 || true)"
+if [ -n "$user" ]; then
+  bashio::log.notice "Replacing existing user with uid $PUID: $user"
+  deluser "$user"
+fi
 adduser -G "$GROUP" -D -H -u "$PUID" "$USER"
 
 if [ -n "${EXTRA_GID:-}" ]; then
