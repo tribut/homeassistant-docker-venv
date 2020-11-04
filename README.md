@@ -11,6 +11,8 @@ Since version 0.107, the Home Assistant docker image uses the [S6-Overlay](https
 
 Finally, some packages on Alpine (Home Assistant's base image) are buggy if not running as root (like ping). For that reason, the custom run script supports installing extra packages, specified in the `PACKAGES` environment variable, before starting Home Assistant.
 
+There is also a option to install python packages in the venv, add your package to the `PIP` environment variable. See the examples below.
+
 ## Usage
 
 Follow the [official docs] for installation inside docker. But before you start your container, make sure the script `run` is available in `/config/docker`:
@@ -33,6 +35,7 @@ docker run -d \
     -e "PUID=1000" \
     -e "PGID=1000" \
     -e "PACKAGES=iputils" \
+    -e "PIP=aiogithubapi" \
     -v "/PATH_TO_YOUR_CONFIG:/config" \
     -v "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run" \
     --net=host \
@@ -64,6 +67,7 @@ home-assistant:
         - PGID=1000
         - UMASK=007
         - PACKAGES=iputils
+        - PIP=aiogithubapi
     volumes:
         - "/PATH_TO_YOUR_CONFIG/config:/config"
         - "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run"

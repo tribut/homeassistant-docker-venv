@@ -8,6 +8,7 @@ PGID="${PGID:-1000}"
 UMASK="${UMASK:-}"
 
 PACKAGES="${PACKAGES:-}"
+PIP="${PIP:-}"
 
 VENV_PATH="${VENV:-/var/tmp/homeassistant-venv}"
 CONFIG_PATH=/config
@@ -94,6 +95,16 @@ fi
 bashio::log.info "Activating venv"
 . "$VENV_PATH/bin/activate"
 
+#
+# Install Python packages
+#
+
+if [ -n "${PIP}" ]; then
+  bashio::log.info "Installing extra PYTHON packages: $PIP"
+  su "$USER" \
+    -c "pip install $PIP"
+fi
+
 # Everything below should be kept in sync with
 #   core:rootfs/etc/services.d/home-assistant/run
 # from upstream:
@@ -108,3 +119,4 @@ bashio::log.info "Starting homeassistant"
 exec \
   s6-setuidgid "$USER" \
   python3 -m homeassistant --config "$CONFIG_PATH"
+  
