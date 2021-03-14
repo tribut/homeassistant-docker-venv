@@ -9,6 +9,7 @@ UMASK="${UMASK:-}"
 
 PACKAGES="${PACKAGES:-}"
 
+CACHE_PATH="${CACHE:-/var/tmp/homeassistant-cache}"
 VENV_PATH="${VENV:-/var/tmp/homeassistant-venv}"
 CONFIG_PATH=/config
 
@@ -77,6 +78,19 @@ fi
 bashio::log.info "Initializing venv in $VENV_PATH"
 su "$USER" \
   -c "python3 -m venv --system-site-packages '$VENV_PATH'"
+
+#
+# Create cache directory and set cache location
+#
+
+if [ ! -d "$CACHE_PATH" ]; then
+  bashio::log.info "Creating cache directory in $CACHE_PATH"
+  su "$USER" -c "mkdir -p '$CACHE_PATH'"
+fi
+
+export XDG_CONFIG_HOME="$CACHE_PATH/.config"
+export XDG_CACHE_HOME="$CACHE_PATH/.cache"
+export XDG_DATA_HOME="$CACHE_PATH/.local/share"
 
 #
 # Fix permissions
