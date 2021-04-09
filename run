@@ -38,7 +38,7 @@ if [ -n "$user" ]; then
   bashio::log.notice "Replacing existing user with uid $PUID: $user"
   deluser "$user"
 fi
-adduser -G "$GROUP" -D -H -u "$PUID" "$USER"
+adduser -G "$GROUP" -D -u "$PUID" "$USER"
 
 if [ -n "${EXTRA_GID:-}" ]; then
   bashio::log.info "Resolving suppementary GIDs: $EXTRA_GID"
@@ -93,6 +93,9 @@ fi
 
 bashio::log.info "Activating venv"
 . "$VENV_PATH/bin/activate"
+
+bashio::log.info "Setting new \$HOME"
+export HOME="$( getent passwd "$USER" | cut -d: -f6 )"
 
 # Everything below should be kept in sync with
 #   core:rootfs/etc/services.d/home-assistant/run
