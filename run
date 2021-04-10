@@ -41,7 +41,7 @@ fi
 adduser -G "$GROUP" -D -u "$PUID" "$USER"
 
 if [ -n "${EXTRA_GID:-}" ]; then
-  bashio::log.info "Resolving suppementary GIDs: $EXTRA_GID"
+  bashio::log.info "Resolving supplementary GIDs: $EXTRA_GID"
   supplementary_groups=()
 
   for gid in $EXTRA_GID; do
