@@ -33,6 +33,7 @@ docker run -d \
     -e "PUID=1000" \
     -e "PGID=1000" \
     -e "PACKAGES=iputils" \
+    -e "PIP_PACKAGES=xortool" \
     -v "/PATH_TO_YOUR_CONFIG:/config" \
     -v "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run" \
     --net=host \
@@ -64,6 +65,7 @@ home-assistant:
         - PGID=1000
         - UMASK=007
         - PACKAGES=iputils
+        - PIP_PACKAGES=xortool
     volumes:
         - "/PATH_TO_YOUR_CONFIG/config:/config"
         - "/PATH_TO_YOUR_CONFIG/docker/run:/etc/services.d/home-assistant/run"
