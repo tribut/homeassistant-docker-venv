@@ -7,6 +7,7 @@ PGID="${PGID:-1000}"
 
 UMASK="${UMASK:-}"
 
+REQUIRED_PACKAGES="s6-ipcserver"
 PACKAGES="${PACKAGES:-}"
 
 VENV_PATH="${VENV:-/var/tmp/homeassistant-venv}"
@@ -65,14 +66,12 @@ fi
 # Install extra packages
 #
 
-if [ -n "${PACKAGES}" ]; then
-  for package in $PACKAGES; do
-    if ! apk -e info "$package"; then # check if already installed
-      bashio::log.info "Installing extra package: $package"
-      apk add --quiet --no-progress --no-cache -- "$package"
-    fi
-  done
-fi
+for package in $REQUIRED_PACKAGES $PACKAGES; do
+  if ! apk -e info "$package"; then
+    bashio::log.info "Installing package: $package"
+    apk add --quiet --no-progress --no-cache -- "$package"
+  fi
+done
 
 #
 # Create virtual environment
