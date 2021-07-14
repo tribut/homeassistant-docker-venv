@@ -67,7 +67,7 @@ fi
 #
 
 for package in $REQUIRED_PACKAGES $PACKAGES; do
-  if ! apk -e info "$package"; then
+  if ! apk info --quiet --installed -- "$package"; then
     bashio::log.info "Installing package: $package"
     apk add --quiet --no-progress --no-cache -- "$package"
   fi
