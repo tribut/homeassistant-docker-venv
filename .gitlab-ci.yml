@@ -1,0 +1,7 @@
+image: koalaman/shellcheck-alpine:stable
+
+shellcheck-run:
+  stage: test
+  script:
+    - shellcheck --version
+    - shellcheck --color=always ./run

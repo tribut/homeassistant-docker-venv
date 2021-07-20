@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 
 USER="homeassistant"
 GROUP="$USER"
@@ -56,7 +57,7 @@ if [ -n "${EXTRA_GID:-}" ]; then
     supplementary_groups+=( "$group" )
   done
 
-  bashio::log.info "Appending supplementary groups: ${supplementary_groups[@]}"
+  bashio::log.info "Appending supplementary groups: ${supplementary_groups[*]}"
   for group in "${supplementary_groups[@]}"; do
     addgroup "$USER" "$group"
   done
@@ -95,10 +96,12 @@ fi
 #
 
 bashio::log.info "Activating venv"
+# shellcheck source=/dev/null
 . "$VENV_PATH/bin/activate"
 
 bashio::log.info "Setting new \$HOME"
-export HOME="$( getent passwd "$USER" | cut -d: -f6 )"
+HOME="$( getent passwd "$USER" | cut -d: -f6 )"
+export HOME
 
 # Everything below should be kept in sync with upstream's
 #   https://github.com/home-assistant/core/blob/dev/rootfs/etc/services.d/home-assistant/run
