@@ -100,9 +100,8 @@ bashio::log.info "Activating venv"
 bashio::log.info "Setting new \$HOME"
 export HOME="$( getent passwd "$USER" | cut -d: -f6 )"
 
-# Everything below should be kept in sync with
-#   core:rootfs/etc/services.d/home-assistant/run
-# from upstream:
+# Everything below should be kept in sync with upstream's
+#   https://github.com/home-assistant/core/blob/dev/rootfs/etc/services.d/home-assistant/run
 cd "$CONFIG_PATH" || bashio::exit.nok "Can't find config folder: $CONFIG_PATH"
 
 # Enable Jemalloc for Home Assistant Core, unless disabled
