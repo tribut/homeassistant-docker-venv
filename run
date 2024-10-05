@@ -101,6 +101,7 @@ fi
 bashio::log.info "Activating venv"
 # shellcheck source=/dev/null
 . "$VENV_PATH/bin/activate"
+export UV_SYSTEM_PYTHON=false
 
 bashio::log.info "Setting new \$HOME"
 HOME="$( getent passwd "$USER" | cut -d: -f6 )"
