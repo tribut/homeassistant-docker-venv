@@ -103,6 +103,10 @@ bashio::log.info "Activating venv"
 . "$VENV_PATH/bin/activate"
 export UV_SYSTEM_PYTHON=false
 
+bashio::log.info "Installing uv into venv"
+uv --version && su "$USER" \
+  -c "uv pip freeze --system|grep ^uv=|xargs uv pip install"
+
 bashio::log.info "Setting new \$HOME"
 HOME="$( getent passwd "$USER" | cut -d: -f6 )"
 export HOME
